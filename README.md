@@ -11,7 +11,7 @@ Repositorio para el obligatorio del **Taller de Servidores Linux** (Universidad 
 ## Avances y evidencias
 
 - [x] Creación y configuración de la VM Ubuntu 24.04
-- [ ] Creación y configuración de la VM CentOS Stream 9
+- [x] Creación y configuración de la VM CentOS Stream 9
 - [ ] Configuración de inventario y pruebas con Ansible
 - [ ] Creación y ejecución de playbooks
 - [ ] Respuestas teóricas y documentación final
