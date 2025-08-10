@@ -1,0 +1,1 @@
+centos1 | CHANGED | rc=0 | (stdout) active

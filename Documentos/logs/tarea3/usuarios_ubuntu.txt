@@ -1,0 +1,1 @@
+ubuntu1 | CHANGED | rc=0 | (stdout) root\ndaemon\nbin\nsys\nsync\ngames\nman\nlp\nmail\nnews\nuucp\nproxy\nwww-data\nbackup\nlist\nirc\n_apt\nnobody\nsystemd-network\nsystemd-timesync\ndhcpcd\nmessagebus\nsystemd-resolve\npollinate\npolkitd\nsyslog\nuuidd\ntcpdump\nlandscape\nfwupd-refresh\nsshd\nuser1
