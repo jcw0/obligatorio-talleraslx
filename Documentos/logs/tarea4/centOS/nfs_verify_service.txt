@@ -1,0 +1,2 @@
+centos1 | CHANGED | rc=0 >>
+active

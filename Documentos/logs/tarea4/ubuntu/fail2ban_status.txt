@@ -1,0 +1,15 @@
+● fail2ban.service - Fail2Ban Service
+     Loaded: loaded (/usr/lib/systemd/system/fail2ban.service; enabled; preset: enabled)
+     Active: active (running) since Mon 2025-08-11 12:13:36 UTC; 59min ago
+       Docs: man:fail2ban(1)
+   Main PID: 1272 (fail2ban-server)
+      Tasks: 5 (limit: 2214)
+     Memory: 18.7M (peak: 19.0M)
+        CPU: 3.985s
+     CGroup: /system.slice/fail2ban.service
+             └─1272 /usr/bin/python3 /usr/bin/fail2ban-server -xf start
+
+Aug 11 12:13:36 talleraslx systemd[1]: Started fail2ban.service - Fail2Ban Service.
+Aug 11 12:13:36 talleraslx fail2ban-server[1272]: 2025-08-11 12:13:36,349 fail2ban.configreader   [1272]: WARNING 'allowipv…: 'auto'
+Aug 11 12:13:36 talleraslx fail2ban-server[1272]: Server ready
+Hint: Some lines were ellipsized, use -l to show in full.

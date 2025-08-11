@@ -1,0 +1,2 @@
+centos1 | CHANGED | rc=0 >>
+/var/nfs_shared *(rw,sync,no_subtree_check,no_root_squash)

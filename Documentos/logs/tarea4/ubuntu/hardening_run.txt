@@ -1,0 +1,51 @@
+
+PLAY [Hardening Ubuntu 24.04] **************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ubuntu1]
+
+TASK [(Safety) Confirmar que hay clave pública antes de cortar password] *******
+ok: [ubuntu1]
+
+TASK [Abort si no hay authorized_keys (evita lockout)] *************************
+skipping: [ubuntu1]
+
+TASK [(Fix repos ARM64) Usar ports.ubuntu.com si la arquitectura es aarch64] ***
+ok: [ubuntu1]
+
+TASK [Actualizar caché APT (forzar IPv4)] **************************************
+ok: [ubuntu1]
+
+TASK [Actualizar todos los paquetes (dist-upgrade)] ****************************
+ok: [ubuntu1]
+
+TASK [Instalar UFW y fail2ban] *************************************************
+ok: [ubuntu1]
+
+TASK [UFW - política por defecto (deny incoming)] ******************************
+ok: [ubuntu1]
+
+TASK [UFW - allow outgoing] ****************************************************
+ok: [ubuntu1]
+
+TASK [UFW - permitir SSH] ******************************************************
+ok: [ubuntu1]
+
+TASK [UFW - activar] ***********************************************************
+ok: [ubuntu1]
+
+TASK [SSH - deshabilitar login por contraseña] *********************************
+ok: [ubuntu1]
+
+TASK [SSH - deshabilitar login de root] ****************************************
+ok: [ubuntu1]
+
+TASK [Configurar fail2ban (jail.local)] ****************************************
+ok: [ubuntu1]
+
+TASK [Asegurar fail2ban habilitado] ********************************************
+ok: [ubuntu1]
+
+PLAY RECAP *********************************************************************
+ubuntu1                    : ok=14   changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+
