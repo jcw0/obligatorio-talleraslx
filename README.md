@@ -78,11 +78,7 @@ Servidores CentOS Stream 9 y Ubuntu 24.04 con configuración de red según enunc
 - [x] Creación y configuración de la VM CentOS Stream 9
 - [x] Configuración de inventario y pruebas con Ansible
 - [x] Creación y ejecución de playbooks
-<<<<<<< HEAD
-- [ ] Respuestas teóricas y documentación final
-=======
 - [x] Respuestas teóricas y documentación final
->>>>>>> 4743e51 (update del README.md y creacion del anisble_basics.md)
 
 ## Cómo clonar el repositorio
 
