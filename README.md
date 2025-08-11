@@ -13,7 +13,7 @@ Repositorio para el obligatorio del **Taller de Servidores Linux** (Universidad 
 - [x] Creación y configuración de la VM Ubuntu 24.04
 - [x] Creación y configuración de la VM CentOS Stream 9
 - [x] Configuración de inventario y pruebas con Ansible
-- [ ] Creación y ejecución de playbooks
+- [x] Creación y ejecución de playbooks
 - [ ] Respuestas teóricas y documentación final
 
 ## Cómo clonar el repositorio
