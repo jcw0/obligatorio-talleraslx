@@ -1,0 +1,14 @@
+[DEFAULT]
+banaction = iptables-multiport
+destemail = root@localhost
+sender = fail2ban@localhost
+action = %(action_)s
+
+[sshd]
+enabled  = true
+port     = ssh
+filter   = sshd
+logpath  = /var/log/auth.log
+maxretry = 5
+findtime = 10m
+bantime  = 1h

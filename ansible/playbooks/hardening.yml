@@ -1,0 +1,114 @@
+---
+- name: Hardening Ubuntu 24.04
+  hosts: ubuntu
+  become: yes
+  vars:
+    sshd_config: /etc/ssh/sshd_config
+    jail_local: /etc/fail2ban/jail.local
+    ssh_user: "{{ ansible_user | default('user1') }}"
+
+  pre_tasks:
+    - name: (Safety) Confirmar que hay clave pública antes de cortar password
+      stat:
+        path: "/home/{{ ssh_user }}/.ssh/authorized_keys"
+      register: ak
+    - name: Abort si no hay authorized_keys (evita lockout)
+      fail:
+        msg: "No existe {{ ak.stat.path }}. Subí la clave pública antes de deshabilitar PasswordAuthentication."
+      when: not ak.stat.exists
+
+    - name: (Fix repos ARM64) Usar ports.ubuntu.com si la arquitectura es aarch64
+      copy:
+        dest: /etc/apt/sources.list
+        content: |
+          deb http://ports.ubuntu.com/ubuntu-ports noble main restricted universe multiverse
+          deb http://ports.ubuntu.com/ubuntu-ports noble-updates main restricted universe multiverse
+          deb http://ports.ubuntu.com/ubuntu-ports noble-backports main restricted universe multiverse
+          deb http://ports.ubuntu.com/ubuntu-ports noble-security main restricted universe multiverse
+        owner: root
+        group: root
+        mode: '0644'
+      when: ansible_architecture in ['aarch64','arm64']
+
+    - name: Actualizar caché APT (forzar IPv4)
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      environment:
+        APT_FORCE_IPV4: "1"
+
+  tasks:
+    - name: Actualizar todos los paquetes (dist-upgrade)
+      apt:
+        upgrade: dist
+      notify: Reiniciar sistema si hubo actualizaciones
+
+    - name: Instalar UFW y fail2ban
+      apt:
+        name: [ufw, fail2ban]
+        state: present
+
+    - name: UFW - política por defecto (deny incoming)
+      ufw:
+        direction: incoming
+        policy: deny
+
+    - name: UFW - allow outgoing
+      ufw:
+        direction: outgoing
+        policy: allow
+
+    - name: UFW - permitir SSH
+      ufw:
+        rule: allow
+        name: OpenSSH
+
+    - name: UFW - activar
+      ufw:
+        state: enabled
+
+    - name: SSH - deshabilitar login por contraseña
+      lineinfile:
+        path: "{{ sshd_config }}"
+        regexp: '^#?PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+      notify: Reiniciar SSH
+
+    - name: SSH - deshabilitar login de root
+      lineinfile:
+        path: "{{ sshd_config }}"
+        regexp: '^#?PermitRootLogin'
+        line: 'PermitRootLogin no'
+      notify: Reiniciar SSH
+
+    - name: Configurar fail2ban (jail.local)
+      template:
+        src: ../templates/fail2ban-jail.local.j2
+        dest: "{{ jail_local }}"
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Reiniciar fail2ban
+
+    - name: Asegurar fail2ban habilitado
+      service:
+        name: fail2ban
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: Reiniciar SSH
+      service:
+        name: ssh
+        state: restarted
+
+    - name: Reiniciar sistema si hubo actualizaciones
+      reboot:
+        msg: "Reiniciando tras dist-upgrade..."
+        connect_timeout: 5
+        reboot_timeout: 900
+
+    - name: Reiniciar fail2ban
+      service:
+        name: fail2ban
+        state: restarted
