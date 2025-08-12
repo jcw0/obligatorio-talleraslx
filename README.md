@@ -24,21 +24,70 @@
 
 ```
 obligatorio-taller-linux/
-├── README.md
-├── inventory.ini
-├── playbooks/
-│   ├── nfs_setup.yml
-│   └── hardening.yml
-└── Documentos/
-    ├── Tarea3/
-    ├── Tarea4_CentOS/
-    ├── Tarea4_Ubuntu/
-    └── Tarea5/
+├── README.md                  
+├── inventory.ini               
+├── playbooks/                  
+│   ├── nfs_setup.yml          
+│   └── hardening.yml           
+├── ansible_basics.md           
+└── Documentos/                 
+    ├── Tarea1/                
+    ├── Tarea2/                 
+    ├── Tarea3/                 
+    ├── Tarea4_CentOS/          
+    ├── Tarea4_Ubuntu/          
+    └── Tarea5/                 
+
 ```
 
 ---
 
 ## ▶️ Ejecución de playbooks
+
+## 🌐 Nota sobre redes e inventario (macOS + VMware Fusion)
+
+En mi entorno local (macOS con VMware Fusion) **uso IPs de NAT** para conectar por SSH a las VMs.
+Esto se debe a problemas de conectividad usando *red interna/host‑only* en este entorno, por lo que
+para poder trabajar de forma estable opté por NAT.
+
+Para que el repositorio sea **portátil** y funcione también en el entorno de evaluación, el archivo
+`inventory.ini` del repo está **parametrizado con *placeholders***. **Antes de ejecutar**, el usuario debe reemplazar los valores por las IPs reales de sus VMs.
+
+### Inventario con placeholders
+```ini
+[ubuntu]
+ubuntu1 ansible_host=IP_UBUNTU ansible_user=user1
+
+[centos]
+centos1 ansible_host=IP_CENTOS ansible_user=user1
+
+[linux:children]
+ubuntu
+centos
+
+[webserver]
+centos1
+```
+
+### Cómo completar las IPs
+1) En cada VM, obtener la IP con:
+```bash
+ip a
+```
+2) Editar `inventory.ini` y reemplazar:
+- `IP_UBUNTU` → IP de la VM Ubuntu (interfaz interna del entorno del docente).
+- `IP_CENTOS` → IP de la VM CentOS (interfaz interna del entorno del docente).
+
+### Comandos de verificación
+```bash
+ansible-inventory -i inventory.ini --list
+ansible all -i inventory.ini -m ping
+```
+
+> **Nota personal (ejecución local):** en mi máquina sigo usando IPs NAT por la
+> limitación mencionada. Esto no afecta la portabilidad: basta con que en
+> `inventory.ini` se reemplacen los placeholders por las IPs que correspondan
+> al entorno donde se ejecute.
 
 ### NFS (CentOS)
 ```bash
