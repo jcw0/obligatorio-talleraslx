@@ -1,1 +1,14 @@
-centos1 | CHANGED | rc=0 | (stdout) Reference ID    : C828734A (r200-40-115-74.ae-static.anteldata.net.uy)\nStratum         : 2\nRef time (UTC)  : Sun Aug 10 17:08:36 2025\nSystem time     : 0.000023583 seconds slow of NTP time\nLast offset     : +0.061789121 seconds\nRMS offset      : 0.037263699 seconds\nFrequency       : 1065.289 ppm slow\nResidual freq   : +281.401 ppm\nSkew            : 184.095 ppm\nRoot delay      : 0.013499378 seconds\nRoot dispersion : 0.030999940 seconds\nUpdate interval : 65.0 seconds\nLeap status     : Normal
+centos1 | CHANGED | rc=0 >>
+Reference ID    : C828734A (74.115.40.200.in-addr.arpa)
+Stratum         : 2
+Ref time (UTC)  : Tue Aug 12 01:58:38 2025
+System time     : 0.000073050 seconds slow of NTP time
+Last offset     : +0.067731887 seconds
+RMS offset      : 0.035168506 seconds
+Frequency       : 816.465 ppm slow
+Residual freq   : +61.513 ppm
+Skew            : 714.287 ppm
+Root delay      : 0.011747364 seconds
+Root dispersion : 0.035747804 seconds
+Update interval : 64.0 seconds
+Leap status     : Normal

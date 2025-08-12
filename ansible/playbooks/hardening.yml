@@ -12,6 +12,7 @@
       stat:
         path: "/home/{{ ssh_user }}/.ssh/authorized_keys"
       register: ak
+
     - name: Abort si no hay authorized_keys (evita lockout)
       fail:
         msg: "No existe {{ ak.stat.path }}. Subí la clave pública antes de deshabilitar PasswordAuthentication."
@@ -28,6 +29,28 @@
         owner: root
         group: root
         mode: '0644'
+      when: ansible_architecture in ['aarch64','arm64']
+
+    # --- FIX APT en ARM64: usar ports.ubuntu.com con deb822 ---
+    - name: (ARM64) Reemplazar ubuntu.sources por ports.ubuntu.com
+      copy:
+        dest: /etc/apt/sources.list.d/ubuntu.sources
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          Types: deb
+          URIs: http://ports.ubuntu.com/ubuntu-ports
+          Suites: noble noble-updates noble-backports noble-security
+          Components: main restricted universe multiverse
+          Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+      when: ansible_architecture in ['aarch64','arm64']
+      notify: Reiniciar SSH   # opcional; si no querés notificar nada, remové esta línea
+
+    - name: (ARM64) Deshabilitar /etc/apt/sources.list si existe (usamos deb822)
+      file:
+        path: /etc/apt/sources.list
+        state: absent
       when: ansible_architecture in ['aarch64','arm64']
 
     - name: Actualizar caché APT (forzar IPv4)
@@ -67,20 +90,11 @@
       ufw:
         state: enabled
 
-    - name: SSH - deshabilitar login por contraseña
-      lineinfile:
-        path: "{{ sshd_config }}"
-        regexp: '^#?PasswordAuthentication'
-        line: 'PasswordAuthentication no'
-      notify: Reiniciar SSH
+    - name: Validar sintaxis de sshd antes de reiniciar
+      command: sshd -t
+      changed_when: false
 
-    - name: SSH - deshabilitar login de root
-      lineinfile:
-        path: "{{ sshd_config }}"
-        regexp: '^#?PermitRootLogin'
-        line: 'PermitRootLogin no'
-      notify: Reiniciar SSH
-
+    # --- fail2ban ---
     - name: Configurar fail2ban (jail.local)
       template:
         src: ../templates/fail2ban-jail.local.j2

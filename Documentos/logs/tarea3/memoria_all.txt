@@ -1,2 +1,8 @@
-ubuntu1 | CHANGED | rc=0 | (stdout)                total        used        free      shared  buff/cache   available\nMem:           1,9Gi       277Mi       1,5Gi       1,2Mi       252Mi       1,6Gi\nSwap:          4,0Gi          0B       4,0Gi
-centos1 | CHANGED | rc=0 | (stdout)                total        used        free      shared  buff/cache   available\nMem:           1,7Gi       955Mi       117Mi        18Mi       733Mi       743Mi\nSwap:          4,0Gi          0B       4,0Gi
+ubuntu1 | CHANGED | rc=0 >>
+               total        used        free      shared  buff/cache   available
+Mem:           1,9Gi       294Mi       1,4Gi       1,3Mi       322Mi       1,6Gi
+Swap:          4,0Gi          0B       4,0Gi
+centos1 | CHANGED | rc=0 >>
+               total        used        free      shared  buff/cache   available
+Mem:           1,7Gi       938Mi       136Mi        18Mi       732Mi       761Mi
+Swap:          4,0Gi       0,0Ki       4,0Gi
