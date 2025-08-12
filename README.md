@@ -42,18 +42,16 @@ obligatorio-taller-linux/
 
 ---
 
+
 ## ▶️ Ejecución de playbooks
 
-## 🌐 Nota sobre redes e inventario (macOS + VMware Fusion)
+### 🌐 Nota sobre redes e inventario (macOS + VMware Fusion)
 
-En mi entorno local (macOS con VMware Fusion) **uso IPs de NAT** para conectar por SSH a las VMs.
-Esto se debe a problemas de conectividad usando *red interna/host‑only* en este entorno, por lo que
-para poder trabajar de forma estable opté por NAT.
+En mi entorno local (macOS con VMware Fusion) utilizo **IPs de NAT** para conectar por SSH a las VMs debido a problemas de conectividad con la red interna/host-only.  
+Esto quedó evidenciado en las capturas incluidas.  
+Para la evaluación en otro entorno, basta con reemplazar en `inventory.ini` las IPs NAT por las IPs internas reales de cada VM.
 
-Para que el repositorio sea **portátil** y funcione también en el entorno de evaluación, el archivo
-`inventory.ini` del repo está **parametrizado con *placeholders***. **Antes de ejecutar**, el usuario debe reemplazar los valores por las IPs reales de sus VMs.
-
-### Inventario con placeholders
+Ejemplo de inventario con placeholders:
 ```ini
 [ubuntu]
 ubuntu1 ansible_host=IP_UBUNTU ansible_user=user1
@@ -69,37 +67,75 @@ centos
 centos1
 ```
 
-### Cómo completar las IPs
-1) En cada VM, obtener la IP con:
+Para obtener las IPs en cada VM:
 ```bash
 ip a
 ```
-2) Editar `inventory.ini` y reemplazar:
-- `IP_UBUNTU` → IP de la VM Ubuntu (interfaz interna del entorno del docente).
-- `IP_CENTOS` → IP de la VM CentOS (interfaz interna del entorno del docente).
 
-### Comandos de verificación
+Verificación del inventario:
 ```bash
 ansible-inventory -i inventory.ini --list
 ansible all -i inventory.ini -m ping
 ```
 
-> **Nota personal (ejecución local):** en mi máquina sigo usando IPs NAT por la
-> limitación mencionada. Esto no afecta la portabilidad: basta con que en
-> `inventory.ini` se reemplacen los placeholders por las IPs que correspondan
-> al entorno donde se ejecute.
-
-### NFS (CentOS)
-```bash
-ansible-playbook -i inventory.ini playbooks/nfs_setup.yml
-```
-
-### Hardening (Ubuntu)
-```bash
-ansible-playbook -i inventory.ini playbooks/hardening.yml
-```
+> **Nota personal:** en mi máquina sigo usando IPs NAT por la limitación mencionada. Esto no afecta la portabilidad: basta con que en `inventory.ini` se reemplacen los placeholders por las IPs que correspondan al entorno donde se ejecute.
 
 ---
+
+### Ejecución de Playbooks
+
+#### NFS en CentOS
+```bash
+ansible-playbook -i inventory.ini playbooks/nfs_setup.yml -K
+```
+> El `-K` es necesario porque varias tareas requieren privilegios (ej. modificar firewall, montar directorios exportados).
+
+#### Hardening en Ubuntu
+```bash
+ansible-playbook -i inventory.ini playbooks/hardening.yml -K
+```
+> El `-K` es necesario para tareas como configurar UFW, reiniciar `sshd` y administrar Fail2ban.
+
+---
+
+### Comandos de verificación posteriores a los playbooks
+
+#### NFS (CentOS)
+- **Estado del servicio**:
+```bash
+ansible centos -i inventory.ini -a "systemctl status nfs-server"
+```
+- **Export y permisos (requiere sudo)**:
+```bash
+ansible centos -i inventory.ini -b -K -a "cat /etc/exports"
+ansible centos -i inventory.ini -b -K -a "exportfs -v"
+ansible centos -i inventory.ini -b -K -a "ls -ld /var/nfs_shared"
+```
+- **Firewall (requiere sudo)**:
+```bash
+ansible centos -i inventory.ini -b -K -a "firewall-cmd --list-ports"
+ansible centos -i inventory.ini -b -K -a "firewall-cmd --list-services"
+```
+
+#### Hardening (Ubuntu)
+- **UFW**:
+```bash
+ansible ubuntu -i inventory.ini -b -K -a "ufw status verbose"
+```
+- **SSH config**:
+```bash
+ansible ubuntu -i inventory.ini -a "grep -E 'PermitRootLogin|PasswordAuthentication' /etc/ssh/sshd_config"
+```
+- **Fail2ban**:
+```bash
+ansible ubuntu -i inventory.ini -b -K -a "fail2ban-client status"
+ansible ubuntu -i inventory.ini -b -K -a "fail2ban-client status sshd"
+```
+- **Historial de actualizaciones**:
+```bash
+ansible ubuntu -i inventory.ini -m shell -b -K -a "grep -E '^(Start-Date|Upgrade:)' /var/log/apt/history.log | tail -n 20"
+```
+
 
 ## ✅ Validación de cada tarea
 
@@ -177,16 +213,6 @@ ansible ubuntu -i inventory.ini -a "fail2ban-client status"
 ansible ubuntu -i inventory.ini -a "fail2ban-client status sshd"
 ```
 
----
-
-## 📚 Referencias
-
-- [Guía configuración UFW](https://www.cyberciti.biz/faq/how-to-configure-firewall-with-ufw-on-ubuntu-20-04-lts/)
-- [Configuración Netplan](https://netplan.io/)
-- [Documentación oficial Ansible](https://docs.ansible.com/)
-
----
-
 ## 🛠 Handlers implementados
 
 ### En `nfs_setup.yml`
@@ -206,3 +232,18 @@ handlers:
       name: ssh
       state: restarted
 ```
+---
+
+## 📚 Referencias
+
+- **Ansible Documentation** – [https://docs.ansible.com](https://docs.ansible.com)  
+- **Ansible ad-hoc commands** – [https://docs.ansible.com/ansible/latest/user_guide/intro_adhoc.html](https://docs.ansible.com/ansible/latest/user_guide/intro_adhoc.html)  
+- **UFW (Uncomplicated Firewall)** – [https://help.ubuntu.com/community/UFW](https://help.ubuntu.com/community/UFW)  
+- **Fail2ban** – [https://www.fail2ban.org/](https://www.fail2ban.org/)  
+- **Chrony** – [https://chrony.tuxfamily.org/](https://chrony.tuxfamily.org/)  
+- **NFS (Network File System)** – [https://wiki.archlinux.org/title/NFS](https://wiki.archlinux.org/title/NFS)  
+- **Firewalld** – [https://firewalld.org/documentation/](https://firewalld.org/documentation/)  
+- **VMware Fusion** – [https://www.vmware.com/products/fusion.html](https://www.vmware.com/products/fusion.html)  
+- **Netplan** – [https://netplan.io/examples/](https://netplan.io/examples/)
+
+---
