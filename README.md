@@ -1,5 +1,15 @@
 # Obligatorio Taller Servidores Linux
 
+## 🎯 Objetivo
+
+Implementar y documentar la configuración de servicios en servidores **Ubuntu Server 24.04** y **CentOS Stream 9** utilizando **Ansible** como herramienta de automatización.  
+El proyecto incluye:  
+- Configuración de red e inventario Ansible.  
+- Ejecución de playbooks para instalación y configuración de servicios.  
+- Aplicación de medidas de hardening y seguridad.  
+- Verificación y validación mediante comandos ad-hoc.  
+- Registro de evidencias mediante capturas de pantalla y logs.
+
 ## 📋 Requisitos previos
 
 - **Ansible** instalado en el bastión/controller (`ansible --version` para verificar).
